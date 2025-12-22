@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("flipso-app")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+97ac4f5046b00be86bf57584e309f04eae82ad9c")]
 [assembly: System.Reflection.AssemblyProductAttribute("flipso-app")]
 [assembly: System.Reflection.AssemblyTitleAttribute("flipso-app")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

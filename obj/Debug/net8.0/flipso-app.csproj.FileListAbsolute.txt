@@ -23,3 +23,4 @@
 /home/ashish/flipso-app/flipso-app/obj/Debug/net8.0/flipso-app.pdb
 /home/ashish/flipso-app/flipso-app/obj/Debug/net8.0/flipso-app.genruntimeconfig.cache
 /home/ashish/flipso-app/flipso-app/obj/Debug/net8.0/ref/flipso-app.dll
+/home/ashish/flipso-app/flipso-app/obj/Debug/net8.0/flipso-app.sourcelink.json
