@@ -2,11 +2,12 @@ trigger:
 - main
 
 pool:
-   name: Default
-  demands:
-    - agent.name -equals windows-agent-1
+  name: Default
 
 steps:
+- script: echo "Agent picked successfully"
+  displayName: 'Agent test'
+
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
