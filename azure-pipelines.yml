@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  name: Default   # self-hosted Windows agent pool
+  name: Default   # Self-hosted Windows agent
 
 stages:
 
@@ -77,14 +77,24 @@ stages:
         scriptType: ps
         scriptLocation: inlineScript
         inlineScript: |
+          Write-Host "Preparing ZIP package..."
+
+          $zipPath = "$(Pipeline.Workspace)\app.zip"
+          $sourcePath = "$(Pipeline.Workspace)\drop\*"
+
+          if (Test-Path $zipPath) {
+            Remove-Item $zipPath -Force
+          }
+
+          Compress-Archive -Path $sourcePath -DestinationPath $zipPath
+
+          Write-Host "ZIP created at $zipPath"
           Write-Host "Starting deployment to Azure Web App..."
 
           az webapp deploy `
             --resource-group rg-flipso-cd `
             --name flipso-cd-app-ashish `
-            --src-path "$(Pipeline.Workspace)\drop" `
+            --src-path $zipPath `
             --type zip
 
           Write-Host "Deployment completed successfully."
-
-
