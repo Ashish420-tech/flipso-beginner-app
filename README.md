@@ -109,6 +109,8 @@ Add automated unit tests
 Add pipeline stages (CI / CD separation)
 
 Add monitoring and logging
+✅ Continuous Integration is live and verified via Azure DevOps with successful pipeline runs triggered on commits to the `main` branch.
+Latest CI run: Azure DevOps Pipelines → Runs → Successful execution on self-hosted agent
 
 👤 Author
 
