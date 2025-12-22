@@ -5,6 +5,9 @@ pool:
   name: Default
 
 stages:
+# =========================
+# STAGE 1: CI
+# =========================
 - stage: CI
   displayName: 'Continuous Integration'
   jobs:
@@ -21,3 +24,33 @@ stages:
 
     - script: dotnet build --no-restore
       displayName: 'Build application'
+
+    - script: dotnet publish -c Release -o $(Build.ArtifactStagingDirectory)
+      displayName: 'Publish build output'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact'
+      inputs:
+        pathToPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: 'drop'
+
+# =========================
+# STAGE 2: CD (NO DEPLOY YET)
+# =========================
+- stage: CD
+  displayName: 'Continuous Deployment'
+  dependsOn: CI
+  condition: succeeded()
+  jobs:
+  - job: Approval
+    displayName: 'Manual Approval Gate'
+    pool: server
+    steps:
+    - task: ManualValidation@0
+      inputs:
+        notifyUsers: |
+          ashish.mondal.linkedin2025@gmail.com
+        instructions: |
+          Review the CI build artifacts and approve to proceed with deployment.
+        onTimeout: reject
+        timeoutInMinutes: 1440
