@@ -57,19 +57,20 @@ stages:
       displayName: 'Approve deployment to Azure'
       inputs:
         instructions: |
-          Please approve to deploy the build to Azure Web App.
+          Approve deployment to Azure Web App.
         timeoutInMinutes: 1440
 
 
-  # ---- Deploy Job ----
+  # ---- Deploy + Verify ----
   - job: Deploy
-    displayName: 'Deploy to Azure Web App'
+    displayName: 'Deploy and Verify Application'
     dependsOn: Approval
     steps:
 
     - download: current
       artifact: drop
 
+    # ---- ZIP & DEPLOY ----
     - task: AzureCLI@2
       displayName: 'Deploy artifact using Azure CLI'
       inputs:
@@ -88,8 +89,7 @@ stages:
 
           Compress-Archive -Path $sourcePath -DestinationPath $zipPath
 
-          Write-Host "ZIP created at $zipPath"
-          Write-Host "Starting deployment to Azure Web App..."
+          Write-Host "Deploying to Azure Web App..."
 
           az webapp deploy `
             --resource-group rg-flipso-cd `
@@ -97,4 +97,29 @@ stages:
             --src-path $zipPath `
             --type zip
 
-          Write-Host "Deployment completed successfully."
+          Write-Host "Deployment completed."
+
+
+    # ---- HEALTH CHECK ----
+    - powershell: |
+        Write-Host "Waiting for application to warm up..."
+        Start-Sleep -Seconds 15
+
+        $healthUrl = "https://flipso-cd-app-ashish.azurewebsites.net/health"
+        Write-Host "Checking health endpoint: $healthUrl"
+
+        try {
+          $response = Invoke-WebRequest -Uri $healthUrl -UseBasicParsing -TimeoutSec 30
+          if ($response.StatusCode -eq 200 -and $response.Content -match "Healthy") {
+            Write-Host "✅ Application is HEALTHY"
+          } else {
+            Write-Error "❌ Health check failed"
+            exit 1
+          }
+        }
+        catch {
+          Write-Error "❌ Health check request failed"
+          exit 1
+        }
+      displayName: 'Verify application health'
+
