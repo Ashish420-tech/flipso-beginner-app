@@ -116,3 +116,152 @@ Latest CI run: Azure DevOps Pipelines → Runs → Successful execution on self-
 
 Ashish Mondal
 DevOps Engineer (Learning Path – AZ-400)
+
+# Flipso Beginner App – Azure DevOps CI/CD Project
+
+This project demonstrates a **production-style CI/CD pipeline using Azure DevOps**, implemented end-to-end with best practices such as environment-based deployments, approvals, health checks, blue-green deployment, rollback strategy, secrets management, and cost control.
+
+> ⚠️ Note: All Azure infrastructure and pipelines were **intentionally deleted after successful validation** to avoid ongoing cloud costs.  
+> The entire setup is fully reproducible from code and YAML.
+
+---
+
+## 🧱 Architecture Overview
+
+GitHub (main branch)
+|
+v
+Azure DevOps CI Pipeline
+
+Restore
+
+Build
+
+Publish Artifact
+|
+v
+CD Pipeline
+├── DEV Environment (Auto Deploy)
+│ └── Health Check
+└── PROD Environment (Manual Approval)
+├── Blue-Green Deployment (Slot)
+├── Health Validation
+└── Slot Swap (Zero Downtime)
+
+
+---
+
+## 🚀 Features Implemented
+
+- ✅ CI pipeline with build & artifact publishing
+- ✅ CD pipeline with **DEV → PROD** environments
+- ✅ Manual approval gate for PROD
+- ✅ Health check endpoint (`/health`)
+- ✅ Blue-Green deployment using App Service slots
+- ✅ Automatic rollback on deployment failure
+- ✅ Azure Key Vault integration for secrets
+- ✅ Application Insights enabled for monitoring
+- ✅ Cost-controlled teardown after validation
+
+---
+
+## 🧪 Application Health Endpoint
+
+The application exposes a health endpoint used by the pipeline:
+
+
+
+GET /health
+Response: Healthy
+
+
+This endpoint is used to **gate deployments** and trigger rollback if unhealthy.
+
+---
+
+## 📸 CI/CD Proof (Screenshots)
+
+### Pipeline – Successful Run
+![Pipeline Success](screenshots/pipeline-success.png)
+
+---
+
+### PROD Approval Gate
+![Approval Gate](screenshots/prod-approval.png)
+
+---
+
+### Blue-Green Deployment Slots
+![Deployment Slots](screenshots/deployment-slots.png)
+
+---
+
+### Application Health Check
+![Health Check](screenshots/health-check.png)
+
+---
+
+## 📄 Pipeline as Code
+
+The full CI/CD logic is defined in:
+
+
+
+azure-pipelines.yml
+
+
+This includes:
+- Multi-stage pipeline
+- Environment approvals
+- Health validation
+- Slot swap
+- Rollback logic
+
+---
+
+## 💸 Cost Control & Cleanup
+
+After successful testing:
+- All Azure resources were deleted
+- App Service Plan downgraded
+- Deployment slots removed
+- Resource groups cleaned
+
+This ensures **zero ongoing billing** while keeping the project fully reproducible.
+
+---
+
+## 🧠 Interview Talking Point
+
+> “I implemented a multi-stage Azure DevOps CI/CD pipeline with environment-based deployments, manual approvals, health checks, blue-green deployment, rollback strategy, secrets via Key Vault, and monitoring with Application Insights. After validation, I tore down the infrastructure to control costs.”
+
+---
+
+## 🔁 Recreate This Project
+
+To recreate:
+1. Provision Azure resources (App Service, Plan, Key Vault)
+2. Restore `azure-pipelines.yml`
+3. Connect Azure DevOps service connection
+4. Run pipeline
+
+---
+
+## 📌 Tech Stack
+
+- ASP.NET Core (.NET 8)
+- Azure DevOps Pipelines
+- Azure App Service
+- Azure CLI
+- Azure Key Vault
+- Application Insights
+
+---
+
+## 👤 Author
+
+**Ashish Mondal**  
+DevOps | CI/CD | Cloud Automation  
+
+GitHub: https://github.com/Ashish420-tech  
+Azure DevOps: https://dev.azure.com/ashishmondallinkedin2025/
