@@ -2,7 +2,9 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+   name: Default
+  demands:
+    - agent.name -equals windows-agent-1
 
 steps:
 - task: UseDotNet@2
