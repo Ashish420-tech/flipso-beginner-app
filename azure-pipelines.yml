@@ -2,9 +2,10 @@ trigger:
 - main
 
 pool:
-  name: Default
+  name: Default   # self-hosted Windows agent pool
 
 stages:
+
 # =========================
 # STAGE 1: CI
 # =========================
@@ -12,10 +13,11 @@ stages:
   displayName: 'Continuous Integration'
   jobs:
   - job: Build
-    displayName: 'Build Application'
+    displayName: 'Build .NET Application'
     steps:
+
     - task: UseDotNet@2
-      displayName: 'Use .NET SDK'
+      displayName: 'Install .NET SDK'
       inputs:
         packageType: 'sdk'
         version: '8.x'
@@ -27,13 +29,14 @@ stages:
       displayName: 'Build application'
 
     - script: dotnet publish -c Release -o $(Build.ArtifactStagingDirectory)
-      displayName: 'Publish build output'
+      displayName: 'Publish application'
 
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact'
+      displayName: 'Publish Build Artifact'
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: 'drop'
+
 
 # =========================
 # STAGE 2: CD
@@ -42,6 +45,7 @@ stages:
   displayName: 'Continuous Deployment'
   dependsOn: CI
   condition: succeeded()
+
   jobs:
 
   # ---- Manual Approval ----
@@ -50,34 +54,37 @@ stages:
     pool: server
     steps:
     - task: ManualValidation@0
-      displayName: 'Approve Deployment'
+      displayName: 'Approve deployment to Azure'
       inputs:
         instructions: |
-          Please review the CI build and approve deployment to Azure Web App.
+          Please approve to deploy the build to Azure Web App.
         timeoutInMinutes: 1440
 
-  # ---- Deploy using Azure CLI ----
+
+  # ---- Deploy Job ----
   - job: Deploy
-    displayName: 'Deploy to Azure Web App using CLI'
+    displayName: 'Deploy to Azure Web App'
     dependsOn: Approval
     steps:
+
     - download: current
       artifact: drop
 
     - task: AzureCLI@2
-  displayName: 'Deploy artifact to Azure Web App'
-  inputs:
-    azureSubscription: 'Azure-Flipso-CD'
-    scriptType: ps
-    scriptLocation: inlineScript
-    inlineScript: |
-      Write-Host "Starting deployment to Azure Web App..."
+      displayName: 'Deploy artifact using Azure CLI'
+      inputs:
+        azureSubscription: 'Azure-Flipso-CD'
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          Write-Host "Starting deployment to Azure Web App..."
 
-      az webapp deploy `
-        --resource-group rg-flipso-cd `
-        --name flipso-cd-app-ashish `
-        --src-path "$(Pipeline.Workspace)\drop" `
-        --type zip
+          az webapp deploy `
+            --resource-group rg-flipso-cd `
+            --name flipso-cd-app-ashish `
+            --src-path "$(Pipeline.Workspace)\drop" `
+            --type zip
 
-      Write-Host "Deployment completed."
+          Write-Host "Deployment completed successfully."
+
 
