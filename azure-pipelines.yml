@@ -4,17 +4,20 @@ trigger:
 pool:
   name: Default
 
-steps:
-- script: echo "Agent picked successfully"
-  displayName: 'Agent test'
+stages:
+- stage: CI
+  displayName: 'Continuous Integration'
+  jobs:
+  - job: Build
+    displayName: 'Build Application'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '8.x'
 
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '8.x'
+    - script: dotnet restore
+      displayName: 'Restore dependencies'
 
-- script: dotnet restore
-  displayName: 'Restore packages'
-
-- script: dotnet build --no-restore
-  displayName: 'Build application'
+    - script: dotnet build --no-restore
+      displayName: 'Build application'
