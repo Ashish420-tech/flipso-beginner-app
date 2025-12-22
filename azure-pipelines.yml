@@ -65,16 +65,19 @@ stages:
       artifact: drop
 
     - task: AzureCLI@2
-      displayName: 'Deploy artifact to Azure Web App'
-      inputs:
-        azureSubscription: 'Azure-Flipso-CD'
-        scriptType: bash
-        scriptLocation: inlineScript
-        inlineScript: |
-          echo "Starting deployment to Azure Web App..."
-          az webapp deploy \
-            --resource-group rg-flipso-cd \
-            --name flipso-cd-app-ashish \
-            --src-path $(Pipeline.Workspace)/drop \
-            --type zip
-          echo "Deployment completed."
+  displayName: 'Deploy artifact to Azure Web App'
+  inputs:
+    azureSubscription: 'Azure-Flipso-CD'
+    scriptType: ps
+    scriptLocation: inlineScript
+    inlineScript: |
+      Write-Host "Starting deployment to Azure Web App..."
+
+      az webapp deploy `
+        --resource-group rg-flipso-cd `
+        --name flipso-cd-app-ashish `
+        --src-path "$(Pipeline.Workspace)\drop" `
+        --type zip
+
+      Write-Host "Deployment completed."
+
