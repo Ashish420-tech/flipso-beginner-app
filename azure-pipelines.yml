@@ -15,6 +15,7 @@ stages:
     displayName: 'Build Application'
     steps:
     - task: UseDotNet@2
+      displayName: 'Use .NET SDK'
       inputs:
         packageType: 'sdk'
         version: '8.x'
@@ -35,22 +36,45 @@ stages:
         artifactName: 'drop'
 
 # =========================
-# STAGE 2: CD (NO DEPLOY YET)
+# STAGE 2: CD
 # =========================
 - stage: CD
   displayName: 'Continuous Deployment'
   dependsOn: CI
   condition: succeeded()
   jobs:
+
+  # ---- Manual Approval ----
   - job: Approval
     displayName: 'Manual Approval Gate'
     pool: server
     steps:
     - task: ManualValidation@0
+      displayName: 'Approve Deployment'
       inputs:
-        notifyUsers: |
-          ashish.mondal.linkedin2025@gmail.com
         instructions: |
-          Review the CI build artifacts and approve to proceed with deployment.
-        onTimeout: reject
+          Please review the CI build and approve deployment to Azure Web App.
         timeoutInMinutes: 1440
+
+  # ---- Deploy using Azure CLI ----
+  - job: Deploy
+    displayName: 'Deploy to Azure Web App using CLI'
+    dependsOn: Approval
+    steps:
+    - download: current
+      artifact: drop
+
+    - task: AzureCLI@2
+      displayName: 'Deploy artifact to Azure Web App'
+      inputs:
+        azureSubscription: 'Azure-Flipso-CD'
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "Starting deployment to Azure Web App..."
+          az webapp deploy \
+            --resource-group rg-flipso-cd \
+            --name flipso-cd-app-ashish \
+            --src-path $(Pipeline.Workspace)/drop \
+            --type zip
+          echo "Deployment completed."
